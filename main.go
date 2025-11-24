@@ -1,11 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"os"
-	"errors"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -23,7 +23,6 @@ func main() {
 	}
 }
 
-
 func getLinesChannel(f io.ReadCloser) <-chan string {
 	lines := make(chan string)
 
@@ -31,15 +30,15 @@ func getLinesChannel(f io.ReadCloser) <-chan string {
 		defer f.Close()
 		defer close(lines)
 		currentLineContents := ""
-		for{
+		for {
 			buffer := make([]byte, 8, 8)
 			n, err := f.Read(buffer)
-			if err != nil{
+			if err != nil {
 				if currentLineContents != "" {
 					lines <- currentLineContents
 					currentLineContents = ""
 				}
-				if errors.Is(err, io.EOF){
+				if errors.Is(err, io.EOF) {
 					break
 				}
 				fmt.Printf("error: %s\n", err.Error())
@@ -47,12 +46,12 @@ func getLinesChannel(f io.ReadCloser) <-chan string {
 			}
 			str := string(buffer[:n])
 			parts := strings.Split(str, "\n")
-			for i := 0; i < len(parts) - 1; i++ {
+			for i := 0; i < len(parts)-1; i++ {
 				currentLineContents += parts[i]
 				lines <- currentLineContents
 				currentLineContents = ""
 			}
-			currentLineContents += parts[len(parts) - 1]
+			currentLineContents += parts[len(parts)-1]
 
 		}
 	}()
