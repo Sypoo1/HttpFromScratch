@@ -30,16 +30,16 @@ func main() {
 
 }
 
-func getLinesChannel(connection net.Conn) <-chan string {
+func getLinesChannel(stream io.ReadCloser) <-chan string {
 	lines := make(chan string)
 
 	go func() {
-		defer connection.Close()
+		defer stream.Close()
 		defer close(lines)
 		currentLineContents := ""
 		for {
 			buffer := make([]byte, 8, 8)
-			n, err := connection.Read(buffer)
+			n, err := stream.Read(buffer)
 			if err != nil {
 				if currentLineContents != "" {
 					lines <- currentLineContents
