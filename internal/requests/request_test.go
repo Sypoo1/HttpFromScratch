@@ -28,4 +28,8 @@ func TestRequestLineRarse(t *testing.T) {
 	// Test: Invalid number of parts in request line
 	_, err = RequestFromReader(strings.NewReader("/coffee HTTP/1.1\r\nHost: localhost:42069\r\nUser-Agent: curl/7.81.0\r\nAccept: */*\r\n\r\n"))
 	require.Error(t, err)
+
+	// Test: Http version
+	_, err = RequestFromReader(strings.NewReader("GET / HTTP/1.0\r\nHost: localhost:42069\r\nUser-Agent: curl/7.81.0\r\nAccept: */*\r\n\r\n"))
+	require.Error(t, err)
 }
