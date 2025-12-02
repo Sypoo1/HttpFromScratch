@@ -70,11 +70,13 @@ func parseRequestLine(data string) (*RequestLine, string, error) {
 		return nil, restOfMessage, ErrMethod
 	}
 
-	if protocol != "HTTP/1.1" {
+	protocolParts := strings.Split(protocol, "/")
+	if len(protocolParts) != 2 || protocolParts[0] != "HTTP" || protocolParts[1] != "1.1" {
 		return nil, restOfMessage, ErrHttpVersion
 	}
+	httpVersion := protocolParts[1]
 
-	rl := RequestLine{"1.1", requestTarget, method}
+	rl := RequestLine{httpVersion, requestTarget, method}
 
 	return &rl, restOfMessage, nil
 
